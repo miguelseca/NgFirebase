@@ -5,6 +5,8 @@ import { Course } from "../model/course";
 import { concatMap, map, tap } from "rxjs/operators";
 import { convertSnaps } from "./db-utils";
 import { Lesson } from "../model/lesson";
+import firebase from 'firebase';
+import OrderByDirection = firebase.firestore.OrderByDirection;
 
 @Injectable({
   providedIn: "root",
@@ -97,6 +99,34 @@ export class CoursesService {
     //     })
     //   );
   }
+  findlessons(
+    courseId: string,
+    sortOrder: OrderByDirection = "asc",
+    pageNumber = 0,
+    pageSize = 3
+  ): Observable<Lesson[]> {
+    return this.db
+      .collection(`courses/${courseId}/lessons`, (ref) =>
+        ref
+          .orderBy("seqNo", sortOrder)
+          .limit(pageSize)
+          .startAfter(pageNumber * pageSize)
+      )
+      .get()
+      .pipe(map((results) => convertSnaps<Lesson>(results)));
+  }
+
+  findCourseByUrl(courseUrl: string): Observable<Course | null> {
+    return this.db
+      .collection("courses", (ref) => ref.where("url", "==", courseUrl))
+      .get()
+      .pipe(
+        map((result) => {
+          const courses = convertSnaps<Course>(result);
+          return courses.length == 1 ? courses[0] : null;
+        })
+      );
+  }
 
   updateCourse(courseId: string, changes: Partial<Course>): Observable<any> {
     return from(this.db.doc(`courses/${courseId}`).update(changes));
@@ -131,7 +161,5 @@ export class CoursesService {
           return from(batch.commit());
         })
       );
-
-    
   }
 }

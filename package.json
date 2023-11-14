@@ -15,8 +15,6 @@
     "export": "firebase emulators:export test-data",
     "firestore_emulator": "firebase emulators:start --only firestore",
     "all_emulators": "firebase emulators:start"
-    
-
   },
   "private": true,
   "dependencies": {
@@ -32,6 +30,7 @@
     "@angular/platform-browser-dynamic": "~13.0.3",
     "@angular/router": "~13.0.3",
     "firebase": "^8.2.6",
+    "firebase-admin": "^11.11.0",
     "firebase-tools": "^11.1.0",
     "firebaseui": "^4.7.3",
     "rxjs": "~6.6.0",
